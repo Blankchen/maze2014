@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">maze2014</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="open_left_drawer">Personal List</string>
+    <string name="close_left_drawer">Open Drawer</string>
+
+</resources>
