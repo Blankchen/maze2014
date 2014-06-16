@@ -34,7 +34,7 @@
         android:layout_height="match_parent"
         android:choiceMode="singleChoice"
         android:divider="#CCCCCC"
-        android:dividerHeight="3dp" />
+        android:dividerHeight="1dp" />
 	</LinearLayout>
  
 </android.support.v4.widget.DrawerLayout>

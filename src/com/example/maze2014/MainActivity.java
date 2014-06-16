@@ -1,16 +1,17 @@
 package com.example.maze2014;
 
 
+
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.SearchView;
+import android.view.Choreographer.FrameCallback;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,40 +22,52 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class MainActivity extends ActionBarActivity {
 
-	//³o­Ó¬O¾ã­Ó Navigation Drawer ªºª«¥ó¡A¤]´N¬O³Ì¥~¼h³Q§Ú­Ì³]©w id ¬° @+id/drw_layout ªº DrawerLayout
+public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMenuListener{
+
+	//é€™å€‹æ˜¯æ•´å€‹ Navigation Drawer çš„ç‰©ä»¶ï¼Œä¹Ÿå°±æ˜¯æœ€å¤–å±¤è¢«æˆ‘å€‘è¨­å®š id ç‚º @+id/drw_layout çš„ DrawerLayout
 	private DrawerLayout mDrawerLayout;
-	//·í¦b Action Bar ¤Wªº Drawer Icon ³QÂIÀ»®É­n°µªº°Ê§@
+	//ç•¶åœ¨ Action Bar ä¸Šçš„ Drawer Icon è¢«é»æ“Šæ™‚è¦åšçš„å‹•ä½œ
 	private ActionBarDrawerToggle mDrawerToggle;	
 	private LinearLayout mLlvDrawerContent;
 	private ListView mLsvDrawerMenu;
-	// °O¿ı³Q¿ï¾Üªº¿ï³æ«ü¼Ğ¥Î
+	// è¨˜éŒ„è¢«é¸æ“‡çš„é¸å–®æŒ‡æ¨™ç”¨
 	private int mCurrentMenuItemPosition = -1;
-	// ¿ï³æ¶µ¥Ø
+	// é¸å–®é …ç›®
 	public static final String[] MENU_ITEMS = new String[]{
-	    "¬¡°Ê¸ê®Æ­¶­±", "·|³õ¬ÛÃö¸ê°T", "­Ó¤H¬¡°Ê²M³æ ", "·j´M¾É¤Ş­¶­±", "NFC¸ê®Æ¹ï¶Ç"
+	    "èœå–®", "åœ°åœ–", "æ¡Œè™Ÿ ", "æˆ‘çš„æœ€æ„›", "çµ±è¨ˆ"
 	};
+	//menu
+	String[] listData = {"1è™Ÿ å¤§éº¥å…‹", "2è™Ÿ é›™å±¤ç‰›è‚‰å‰å£«å ¡", "3è™Ÿ å››ç›å¸ç‰›è‚‰å ¡", "4è™Ÿ é›™å±¤å››ç›å¸ç‰›è‚‰å ¡", "5è™Ÿ éº¥é¦™é­š", "6è™Ÿ éº¥é¦™é›", "7è™Ÿ å…­å¡Šéº¥å…‹é›å¡Š", "8è™Ÿ å‹è¾£é›è…¿å ¡", "9è™Ÿ äºŒå¡Šéº¥è„†é›", "10è™Ÿ æ¿çƒ¤é›è…¿å ¡"};
+	int[] listCost = {125, 115, 132, 152, 112, 105, 119, 125, 139, 125};
 	
+	//map
+	public static android.support.v4.app.FragmentManager fragmentManager;
+	public static Double latitude = 25.082963, longitude = 121.549091;
+	private static String tittle = "McDonaldéº¥ç•¶å‹", context = "104å°ç£åŒ—å®‰è·¯626è™Ÿ";	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
 		initActionBar();
 		initDrawer();
 		setDrawerMenu();
 		
-		//¹w³]¥Ø¿ı
+		//é è¨­ç›®éŒ„
 		selectMenuItem(0);
+				
+		//map- initialising the object of the FragmentManager. Here I'm passing getSupportFragmentManager(). You can pass getFragmentManager() if you are coding for Android 3.0 or above.
+	    fragmentManager = getSupportFragmentManager();
+	
+		
 	}
 	
-	// Navigation Drawer ¹ê§@ ==============================================================
-	// ²ö§Æº¸(Mosil)¤â¥¾ http://blog.mosil.biz/2013/12/android-navigation-drawer/
+	// Navigation Drawer å¯¦ä½œ ==============================================================
+	// è«å¸Œçˆ¾(Mosil)æ‰‹æœ­ http://blog.mosil.biz/2013/12/android-navigation-drawer/
 	private void initActionBar(){		  
-		//Åã¥Ü Up Button (¦ì¦b Logo ¥ª¤âÃäªº«ö¶s¹Ï¥Ü)
+		//é¡¯ç¤º Up Button (ä½åœ¨ Logo å·¦æ‰‹é‚Šçš„æŒ‰éˆ•åœ–ç¤º)
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-		//¥´¶} Up Button ªºÂIÀ»¥\¯à 
+		//æ‰“é–‹ Up Button çš„é»æ“ŠåŠŸèƒ½ 
 		getActionBar().setHomeButtonEnabled(true);			  
 	}
 	
@@ -62,31 +75,31 @@ public class MainActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_main);
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drw_layout);
 		
-	    // ³]©w Drawer ªº¼v¤l
+	    // è¨­å®š Drawer çš„å½±å­
 	    mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 	 
 	    mDrawerToggle = new ActionBarDrawerToggle(
 	            this, 
-	            mDrawerLayout,    // Åı Drawer Toggle ª¾¹D¥ÀÅé¤¶­±¬O½Ö
-	            R.drawable.ic_drawer, // Drawer ªº Icon
-	            R.string.open_left_drawer, // Drawer ³Q¥´¶}®Éªº´y­z
-	            R.string.close_left_drawer // Drawer ³QÃö³¬®Éªº´y­z
+	            mDrawerLayout,    // è®“ Drawer Toggle çŸ¥é“æ¯é«”ä»‹é¢æ˜¯èª°
+	            R.drawable.ic_drawer, // Drawer çš„ Icon
+	            R.string.open_left_drawer, // Drawer è¢«æ‰“é–‹æ™‚çš„æè¿°
+	            R.string.close_left_drawer // Drawer è¢«é—œé–‰æ™‚çš„æè¿°
 	            ) {
-	                //³Q¥´¶}«á­n°µªº¨Æ±¡
+	                //è¢«æ‰“é–‹å¾Œè¦åšçš„äº‹æƒ…
 	                @Override
 	                public void onDrawerOpened(View drawerView) {
-	                    // ±N Title ³]©w¬°¦Û©w¸qªº¤å¦r
+	                    // å°‡ Title è¨­å®šç‚ºè‡ªå®šç¾©çš„æ–‡å­—
 	                	getActionBar().setTitle(R.string.open_left_drawer);	                
 	                }
 	 
-	                //³QÃö¤W«á­n°µªº¨Æ±¡
+	                //è¢«é—œä¸Šå¾Œè¦åšçš„äº‹æƒ…
 	                @Override
 	                public void onDrawerClosed(View drawerView) {
 	                	if (mCurrentMenuItemPosition > -1) {
 	                        getActionBar().setTitle(
 	                                MENU_ITEMS[mCurrentMenuItemPosition]);
 	                    } else {
-	                        // ±N Title ³]©w¦^ APP ªº¦WºÙ
+	                        // å°‡ Title è¨­å®šå› APP çš„åç¨±
 	                        getActionBar().setTitle(R.string.app_name);
 	                    }
 	                }
@@ -96,49 +109,49 @@ public class MainActivity extends ActionBarActivity {
 	}
 	
 	private void setDrawerMenu() {
-	    // ©w¸q·s«Å§iªº¨â­Óª«¥ó¡G¿ï¶µ²M³æªº ListView ¥H¤Î Drawer¤º®eªº LinearLayou
+	    // å®šç¾©æ–°å®£å‘Šçš„å…©å€‹ç‰©ä»¶ï¼šé¸é …æ¸…å–®çš„ ListView ä»¥åŠ Drawerå…§å®¹çš„ LinearLayou
 	    mLsvDrawerMenu = (ListView) findViewById(R.id.lsv_drawer_menu);
 	    mLlvDrawerContent = (LinearLayout) findViewById(R.id.llv_left_drawer);
 	 
-	    // ·í²M³æ¿ï¶µªº¤lª«¥ó³QÂIÀ»®É­n°µªº°Ê§@
+	    // ç•¶æ¸…å–®é¸é …çš„å­ç‰©ä»¶è¢«é»æ“Šæ™‚è¦åšçš„å‹•ä½œ
 	    mLsvDrawerMenu.setOnItemClickListener(new OnItemClickListener() {	 
 	        @Override
 	        public void onItemClick(AdapterView<?> parent, View view,
 	                int position, long id) {
-	        	//¤Á´« Fragment
+	        	//åˆ‡æ› Fragment
 	            selectMenuItem(position);	        
 	        }
 	    });
-	    // ³]©w²M³æªº Adapter¡A³o¸Ìª½±µ¨Ï¥Î ArrayAdapter<String>
+	    // è¨­å®šæ¸…å–®çš„ Adapterï¼Œé€™è£¡ç›´æ¥ä½¿ç”¨ ArrayAdapter<String>
 	    mLsvDrawerMenu.setAdapter(new ArrayAdapter<String>(
 	            this,
-	            R.layout.drawer_menu_item,  // ¿ï³æª«¥óªº¤¶­± 
-	            MENU_ITEMS                  // ¿ï³æ¤º®e
+	            R.layout.drawer_menu_item,  // é¸å–®ç‰©ä»¶çš„ä»‹é¢ 
+	            MENU_ITEMS                  // é¸å–®å…§å®¹
 	    ));
 	}
 	
-	//onPostCreate ¥h¦P¨B DrawerToggle ªºª¬ºA¡A³o¬O½T«O Activity ¦b³Q­«±Ò¥Í©R¶g´Á«á¡ADrawer ¥i¥Hºû«ù¸Ó¦³ªºªø¬Û¡A¦p¨ä icon
+	//onPostCreate å»åŒæ­¥ DrawerToggle çš„ç‹€æ…‹ï¼Œé€™æ˜¯ç¢ºä¿ Activity åœ¨è¢«é‡å•Ÿç”Ÿå‘½é€±æœŸå¾Œï¼ŒDrawer å¯ä»¥ç¶­æŒè©²æœ‰çš„é•·ç›¸ï¼Œå¦‚å…¶ icon
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 	    super.onPostCreate(savedInstanceState);
 	    mDrawerToggle.syncState();
 	}
 	
-	//onConfigurationChanged¡A³o¥D­n¤ñ¸û·|¬O¦bµe­±¦³ÅÜ¤Æ®É­n½T«O Drawer ¸Ó¦³ªº°Ê§@
+	//onConfigurationChangedï¼Œé€™ä¸»è¦æ¯”è¼ƒæœƒæ˜¯åœ¨ç•«é¢æœ‰è®ŠåŒ–æ™‚è¦ç¢ºä¿ Drawer è©²æœ‰çš„å‹•ä½œ
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 	    super.onConfigurationChanged(newConfig);
 	    mDrawerToggle.onConfigurationChanged(newConfig);
 	}
 	
-	//²Ä¤T­Ó¦b Drawer ³QÂI¤U®É¡A¤]´N¬O¦b onOptionsItemSelected ¸Ó­n°µªº°Ê§@¡C 
+	//ç¬¬ä¸‰å€‹åœ¨ Drawer è¢«é»ä¸‹æ™‚ï¼Œä¹Ÿå°±æ˜¯åœ¨ onOptionsItemSelected è©²è¦åšçš„å‹•ä½œã€‚ 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    if (mDrawerToggle.onOptionsItemSelected(item)) {
-	    	//Drawer ÂI¿ï
+	    	//Drawer é»é¸
 	    	return true;
 	    }else{
-	    	// ActionBar ¦U¹Ï¥Üªº click ¨Æ¥ó³B²z
+	    	// ActionBar å„åœ–ç¤ºçš„ click äº‹ä»¶è™•ç†
 	    	switch (item.getItemId()) 
 	        {
 	            case R.id.action_search:
@@ -156,38 +169,53 @@ public class MainActivity extends ActionBarActivity {
 	}
 		
 
-	//selectMenuItem(int position)	·í²M³æª«¥ó³QÂIÀ»«á­n°õ¦æªº°Ê§@
+	//selectMenuItem(int position)	ç•¶æ¸…å–®ç‰©ä»¶è¢«é»æ“Šå¾Œè¦åŸ·è¡Œçš„å‹•ä½œ
 	private void selectMenuItem(int position) {
 	    mCurrentMenuItemPosition = position;	 
-	    // ±N¿ï³æªº¤lª«¥ó³]©w¬°³Q¿ï¾Üªºª¬ºA
+	    // å°‡é¸å–®çš„å­ç‰©ä»¶è¨­å®šç‚ºè¢«é¸æ“‡çš„ç‹€æ…‹
 	    mLsvDrawerMenu.setItemChecked(position, true);	 
-	    // Ãö±¼ Drawer
+	    // é—œæ‰ Drawer
 	    mDrawerLayout.closeDrawer(mLlvDrawerContent);
 	    
-		//[Android]¨Ï¥Î Navigation Drawer »s§@°¼¿ï³æ
+		//[Android]ä½¿ç”¨ Navigation Drawer è£½ä½œå´é¸å–®
 		// http://blog.tonycube.com/2014/02/android-navigation-drawer-2.html		
 	    Fragment fragment = null;
-
-	    switch (position) {
+	    Bundle b=new Bundle();
+	    
+	    switch (position) {	    
 	    case 0:
-	        fragment = new FragmentApple();
-	        break;
+	        fragment = new FragmentMenu();	        
+	        b.putStringArray("Data", listData);
+	        b.putIntArray("Cost", listCost);
+	        fragment.setArguments(b);
+	        break; 
+	    case 1:
+	        fragment = new FragmentMap();	        
+	        b.putDouble("x", latitude);
+	        b.putDouble("y", longitude);
+	        b.putString("tittle", tittle);
+	        b.putString("context", context);
+	        fragment.setArguments(b);
+	        break;    
 	    default:
-	        //ÁÙ¨S»s§@ªº¿ï¶µ¡Afragment ¬O null¡Aª½±µªğ¦^
+	        //é‚„æ²’è£½ä½œçš„é¸é …ï¼Œfragment æ˜¯ nullï¼Œç›´æ¥è¿”å›
 	        return;
 	    }
 
-	    FragmentManager fragmentManager = getFragmentManager();
-	    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();	
-	    
+	    FragmentManager fragmentManager = getFragmentManager(); 
+	    fragmentManager.beginTransaction().  //å¼€å§‹Fragmentçš„äº‹åŠ¡Transaction
+	    	replace(R.id.content_frame, fragment). //æ›¿æ¢å®¹å™¨(container)åŸæ¥çš„Fragment 
+	    	setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE). //è®¾ç½®è½¬æ¢æ•ˆæœ 
+	    	addToBackStack(null). //å°†äº‹åŠ¡æ·»åŠ åˆ°Backæ ˆ.å³æŒ‰ä¸‹Backé”®æ—¶å›åˆ°æ›¿æ¢Fragmentä¹‹å‰çš„çŠ¶æ€.ç±»ä¼¼äºActivityçš„è¿”å›
+	    	commit();	//æäº¤äº‹åŠ¡     	    	    
 	}
 
-	// Navigation Drawer ¹ê§@ ==============================================================
+	// Navigation Drawer å¯¦ä½œ ==============================================================
 	
 //#################################################################################################
 	
-	// ±Ò¥Î Support Library ªº ActionBar ====================================================
-	// ¦Ñ¦ÇÀnªºµ§°O¥» http://oldgrayduck.blogspot.tw/2013/10/android-support-library-actionbar.html
+	// å•Ÿç”¨ Support Library çš„ ActionBar ====================================================
+	// è€ç°é´¨çš„ç­†è¨˜æœ¬ http://oldgrayduck.blogspot.tw/2013/10/android-support-library-actionbar.html
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -202,15 +230,22 @@ public class MainActivity extends ActionBarActivity {
 	
 	public void openSearch()
 	{
-	    Toast.makeText(this, "«ö¤F ´M§ä ¶s", Toast.LENGTH_LONG).show();
+	    Toast.makeText(this, "æŒ‰äº† å°‹æ‰¾ éˆ•", Toast.LENGTH_LONG).show();
 	}
 	  
 	public void openEdit()
 	{
-	    Toast.makeText(this, "«ö¤F §ó·s  ¶s", Toast.LENGTH_LONG).show();
+	    Toast.makeText(this, "æŒ‰äº† æ›´æ–°  éˆ•", Toast.LENGTH_LONG).show();
 	}
 	
-	// ±Ò¥Î Support Library ªº ActionBar ====================================================
+	//fragment callback
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		// TODO Auto-generated method stub
+		//ç´¢å–Fragmentè³‡æ–™
+	}
+	
+	// å•Ÿç”¨ Support Library çš„ ActionBar ====================================================
 
 	
 }
