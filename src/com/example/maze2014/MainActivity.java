@@ -196,7 +196,11 @@ public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMe
 	        b.putString("tittle", tittle);
 	        b.putString("context", context);
 	        fragment.setArguments(b);
-	        break;    
+	        break;  
+	    case 2:
+	        fragment = new FragmentCost();       
+	       
+	        break;  
 	    default:
 	        //還沒製作的選項，fragment 是 null，直接返回
 	        return;

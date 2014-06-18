@@ -1380,8 +1380,8 @@ containing a value of this type.
         public static final int action_menu_divider=0x7f070028;
         public static final int action_menu_presenter=0x7f070029;
         public static final int action_mode_close_button=0x7f070036;
-        public static final int action_refresh=0x7f070054;
-        public static final int action_search=0x7f070053;
+        public static final int action_refresh=0x7f070057;
+        public static final int action_search=0x7f070056;
         public static final int activity_chooser_view_content=0x7f070037;
         public static final int always=0x7f07001e;
         public static final int beginning=0x7f070023;
@@ -1390,6 +1390,8 @@ containing a value of this type.
         public static final int buy_now=0x7f07000f;
         public static final int buy_with_google=0x7f07000e;
         public static final int checkbox=0x7f07003f;
+        public static final int checkinfo_item_name=0x7f070054;
+        public static final int checkinfo_item_value=0x7f070055;
         public static final int classic=0x7f070011;
         public static final int collapseActionView=0x7f070020;
         public static final int content_frame=0x7f07004f;
@@ -1412,9 +1414,10 @@ containing a value of this type.
         public static final int ifRoom=0x7f07001d;
         public static final int image=0x7f070039;
         public static final int listMode=0x7f070014;
+        public static final int listView1=0x7f070052;
         public static final int list_item=0x7f07003b;
         public static final int llv_left_drawer=0x7f070050;
-        public static final int location_map=0x7f070052;
+        public static final int location_map=0x7f070053;
         public static final int lsv_drawer_menu=0x7f070051;
         public static final int match_parent=0x7f07000c;
         public static final int middle=0x7f070024;
@@ -1507,9 +1510,11 @@ containing a value of this type.
         public static final int abc_search_view=0x7f030016;
         public static final int activity_main=0x7f030017;
         public static final int drawer_menu_item=0x7f030018;
-        public static final int fragment_map=0x7f030019;
-        public static final int fragment_menu=0x7f03001a;
-        public static final int support_simple_spinner_dropdown_item=0x7f03001b;
+        public static final int fragment_cost=0x7f030019;
+        public static final int fragment_map=0x7f03001a;
+        public static final int fragment_menu=0x7f03001b;
+        public static final int row_listview_spinner=0x7f03001c;
+        public static final int support_simple_spinner_dropdown_item=0x7f03001d;
     }
     public static final class menu {
         public static final int main=0x7f0c0000;
