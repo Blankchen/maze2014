@@ -35,7 +35,7 @@ public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMe
 	private int mCurrentMenuItemPosition = -1;
 	// 選單項目
 	public static final String[] MENU_ITEMS = new String[]{
-	    "菜單", "地圖", "桌號 ", "我的最愛", "統計"
+	    "選擇菜單", "地圖", "決定數量 ", "我的最愛", "統計"
 	};
 	//menu
 	String[] listData = {"1號 大麥克", "2號 雙層牛肉吉士堡", "3號 四盎司牛肉堡", "4號 雙層四盎司牛肉堡", "5號 麥香魚", "6號 麥香雞", "7號 六塊麥克雞塊", "8號 勁辣雞腿堡", "9號 二塊麥脆雞", "10號 板烤雞腿堡"};
@@ -45,6 +45,11 @@ public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMe
 	public static android.support.v4.app.FragmentManager fragmentManager;
 	public static Double latitude = 25.082963, longitude = 121.549091;
 	private static String tittle = "McDonald麥當勞", context = "104台灣北安路626號";	
+	//cost
+	boolean[] itemChecked = new boolean[listData.length];
+	String[] listChecked;
+	int TrueCount = 0;
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -187,6 +192,7 @@ public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMe
 	        fragment = new FragmentMenu();	        
 	        b.putStringArray("Data", listData);
 	        b.putIntArray("Cost", listCost);
+	        b.putBooleanArray("itemChecked", itemChecked);
 	        fragment.setArguments(b);
 	        break; 
 	    case 1:
@@ -198,8 +204,9 @@ public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMe
 	        fragment.setArguments(b);
 	        break;  
 	    case 2:
-	        fragment = new FragmentCost();       
-	       
+	        fragment = new FragmentCost(); 	
+	        b.putStringArray("DataChecked", listChecked);
+	        fragment.setArguments(b);
 	        break;  
 	    default:
 	        //還沒製作的選項，fragment 是 null，直接返回
@@ -242,11 +249,22 @@ public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMe
 	    Toast.makeText(this, "按了 更新  鈕", Toast.LENGTH_LONG).show();
 	}
 	
-	//fragment callback
+	//fragmentMenu callback
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		// TODO Auto-generated method stub
-		//索取Fragment資料
+		//索取FragmentMenu資料
+		itemChecked[position] = !itemChecked[position];	
+		
+		if(itemChecked[position]) TrueCount++;
+		else TrueCount--;
+		
+		listChecked = new String[TrueCount];
+		
+		for(int i = 0, j = 0; i < itemChecked.length; i++) 
+			if(itemChecked[i])
+				listChecked[j++] = listData[i];		
+		
 	}
 	
 	// 啟用 Support Library 的 ActionBar ====================================================

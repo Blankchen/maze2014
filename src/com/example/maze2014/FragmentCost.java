@@ -22,12 +22,14 @@ import android.widget.Toast;
 
 
 public class FragmentCost extends Fragment{
+	static String[] test; //= {"1號 大麥克", "2號 雙層牛肉吉士堡", "3號 四盎司牛肉堡", "4號 雙層四盎司牛肉堡", "5號 麥香魚", "6號 麥香雞", "7號 六塊麥克雞塊", "8號 勁辣雞腿堡", "9號 二塊麥脆雞", "10號 板烤雞腿堡"};
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		String[] test = {"Aa","Bb","Cc","Dd"};
+		test= getArguments().getStringArray("DataChecked");
+		
 		View rootView = inflater.inflate(R.layout.fragment_cost, container, false);
         ListView lv = (ListView) rootView.findViewById(R.id.listView1); 
         lv.setAdapter(new CheckListAdapter(getActivity(), test));

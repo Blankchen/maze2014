@@ -11,15 +11,16 @@
         android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"
         android:layout_gravity="left"
+        android:gravity="fill_horizontal"
         android:textColor="@android:color/black"
-        android:textSize="18sp" />
+        android:textSize="22sp" />
 
     <Spinner
         android:id="@+id/checkinfo_item_value"
-        android:paddingLeft="20dip"
         android:layout_width="50dip"
         android:layout_height="fill_parent"
         android:layout_alignParentRight="true"
-        android:gravity="center" />
+        android:gravity="center"
+        android:paddingLeft="20dip" />
 
 </RelativeLayout>
