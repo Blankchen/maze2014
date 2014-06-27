@@ -2,6 +2,7 @@ package com.example.maze2014;
 
 
 
+
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -11,7 +12,6 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Choreographer.FrameCallback;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,7 +23,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 
-public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMenuListener{
+public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMenuListener, FragmentCost.OnCostListener{
 
 	//這個是整個 Navigation Drawer 的物件，也就是最外層被我們設定 id 為 @+id/drw_layout 的 DrawerLayout
 	private DrawerLayout mDrawerLayout;
@@ -35,7 +35,7 @@ public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMe
 	private int mCurrentMenuItemPosition = -1;
 	// 選單項目
 	public static final String[] MENU_ITEMS = new String[]{
-	    "菜單", "地圖", "桌號 ", "我的最愛", "統計"
+	    "選擇菜單", "地圖", "決定數量 ", "我的最愛", "統計"
 	};
 	//menu
 	String[] listData = {"1號 大麥克", "2號 雙層牛肉吉士堡", "3號 四盎司牛肉堡", "4號 雙層四盎司牛肉堡", "5號 麥香魚", "6號 麥香雞", "7號 六塊麥克雞塊", "8號 勁辣雞腿堡", "9號 二塊麥脆雞", "10號 板烤雞腿堡"};
@@ -45,6 +45,15 @@ public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMe
 	public static android.support.v4.app.FragmentManager fragmentManager;
 	public static Double latitude = 25.082963, longitude = 121.549091;
 	private static String tittle = "McDonald麥當勞", context = "104台灣北安路626號";	
+	//cost
+	boolean[] itemChecked = new boolean[listData.length]; //勾選項目
+	String[] listChecked; //勾選清單
+	int[] listCostCh; //勾選價錢
+	int TrueCount = 0; //勾選總數
+	int[] DataCount; //各選擇數量
+	//favor
+	String FavorName; //我的最愛名稱
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -176,7 +185,7 @@ public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMe
 	    mLsvDrawerMenu.setItemChecked(position, true);	 
 	    // 關掉 Drawer
 	    mDrawerLayout.closeDrawer(mLlvDrawerContent);
-	    
+	   	 	    
 		//[Android]使用 Navigation Drawer 製作側選單
 		// http://blog.tonycube.com/2014/02/android-navigation-drawer-2.html		
 	    Fragment fragment = null;
@@ -187,6 +196,7 @@ public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMe
 	        fragment = new FragmentMenu();	        
 	        b.putStringArray("Data", listData);
 	        b.putIntArray("Cost", listCost);
+	        b.putBooleanArray("itemChecked", itemChecked);
 	        fragment.setArguments(b);
 	        break; 
 	    case 1:
@@ -198,13 +208,25 @@ public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMe
 	        fragment.setArguments(b);
 	        break;  
 	    case 2:
-	        fragment = new FragmentCost();       
-	       
+	        fragment = new FragmentCost(); 	      
+	        b.putStringArray("DataChecked", listChecked);
+	        b.putIntArray("Costed", listCostCh);
+	        b.putIntArray("DataCount", DataCount);
+	        fragment.setArguments(b);
+	        break;  
+	    case 3:
+	        fragment = new FragmentFavor();
+	        b.putStringArray("DataChecked", listChecked);
+	        b.putIntArray("Costed", listCostCh);
+	        b.putIntArray("DataCount", DataCount);
+	        b.putString("FavorName", FavorName);
+	        fragment.setArguments(b);
 	        break;  
 	    default:
 	        //還沒製作的選項，fragment 是 null，直接返回
 	        return;
 	    }
+	    
 
 	    FragmentManager fragmentManager = getFragmentManager(); 
 	    fragmentManager.beginTransaction().  //开始Fragment的事务Transaction
@@ -239,17 +261,44 @@ public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMe
 	  
 	public void openEdit()
 	{
-	    Toast.makeText(this, "按了 更新  鈕", Toast.LENGTH_LONG).show();
+		Toast.makeText(this, "按了 更新  鈕", Toast.LENGTH_LONG).show();
 	}
+	// 啟用 Support Library 的 ActionBar ====================================================
 	
-	//fragment callback
+	//fragmentMenu callback
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		// TODO Auto-generated method stub
-		//索取Fragment資料
+		//索取FragmentMenu資料
+		itemChecked[position] = !itemChecked[position];	
+		
+		if(itemChecked[position]) TrueCount++;
+		else TrueCount--;
+		
+		listChecked = new String[TrueCount];
+		listCostCh = new int [TrueCount];
+		DataCount = new int[TrueCount];
+		
+		for(int i = 0, j = 0; i < itemChecked.length; i++) 
+			if(itemChecked[i]){
+				listChecked[j] = listData[i];	
+				listCostCh[j] = listCost[i];
+				DataCount[j++] = 1;
+			}
+		
 	}
 	
-	// 啟用 Support Library 的 ActionBar ====================================================
+	//fragmentCost callback
+	@Override
+	public void getDataCount(int[] DataCount, String FavorName) {
+		// TODO Auto-generated method stub	
+		this.DataCount = DataCount;
+		this.FavorName = FavorName;
+		/*String sh="";
+		for(int ss:DataCount) sh += ss + " ";
+		Toast.makeText(this, sh, Toast.LENGTH_LONG).show();*/
+	}
+	
 
 	
 }

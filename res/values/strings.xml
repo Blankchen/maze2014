@@ -8,5 +8,18 @@
     <string name="close_left_drawer">選擇功能</string>
     <string name="action_search">search</string>
     <string name="action_refresh">refresh</string>
+    <string name="no_order">尚未點餐</string>
+    <string name="myfavor">我的最愛</string>
+    <color name="beige">#F2E8DC</color>
+    <string name="sentorder">發送訂單</string>
+    <color name="orangered">#FF4500</color>
+    <color name="black">#000000</color>
+    <color name="lightgray">#D3D3D3</color>
+    <string name="UserName">User Name</string>
+    <string name="Address">Address</string>
+    <string name="Location">Location</string>
+    <string name="EditData">編輯</string>
+    <string name="Delete">刪除</string>
+    <string name="store">店家名稱</string>
   
 </resources>

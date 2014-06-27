@@ -1,12 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
-    android:orientation="vertical" 
-    android:layout_width="fill_parent" 
-    android:layout_height="fill_parent">
-    
-    <ListView 
-        android:id="@+id/listView1" 
-        android:layout_height="match_parent" 
-        android:layout_width="match_parent" />
-    
-</LinearLayout>
+<RelativeLayout  
+	xmlns:android="http://schemas.android.com/apk/res/android"  
+	android:layout_width="fill_parent"  
+	android:layout_height="wrap_content"  
+	android:orientation="vertical"> 
+		
+  	<TextView
+  	    android:id="@+id/NoOrder"
+  	    android:layout_width="wrap_content"
+  	    android:layout_height="wrap_content"
+  	    android:layout_centerHorizontal="true"
+  	    android:layout_centerVertical="true"
+  	    android:layout_marginLeft="6dip"
+  	    android:layout_marginTop="6dip"
+  	    android:gravity="center"
+  	    android:text="@string/no_order"
+  	    android:textAppearance="?android:attr/textAppearanceLarge"
+  	    android:textColor="@color/black"
+  	    android:visibility="invisible" >
+	
+	</TextView>
+	
+  	<LinearLayout
+  	    android:id="@+id/bottom"
+  	    style="@style/ButtonBar"
+  	    android:background="@color/orangered"
+  	    android:layout_width="fill_parent"
+  	    android:layout_height="wrap_content"
+  	    android:layout_alignParentBottom="true"
+  	    android:orientation="horizontal" >
+
+  	    <Button
+  	        android:id="@+id/button1"
+  	        style="@style/ButtonBarButton"
+  	        android:layout_width="fill_parent"
+  	        android:layout_height="wrap_content"
+  	        android:layout_marginTop="2dip" 
+  	        android:layout_weight="1"
+  	        android:text="@string/myfavor" />
+
+  	    <Button
+  	        android:id="@+id/button2"
+  	        style="@style/ButtonBarButton"
+  	        android:layout_width="fill_parent"
+  	        android:layout_height="wrap_content"
+  	        android:layout_marginTop="2dip" 
+  	        android:layout_weight="1"
+  	        android:text="@string/sentorder" />
+
+  	</LinearLayout>
+  
+   <LinearLayout
+       android:id="@+id/top"
+       android:layout_above="@id/bottom" 
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:orientation="horizontal" >  
+       
+	    <ListView
+	        android:id="@+id/listView1"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"/>	    
+	</LinearLayout>  
+	
+</RelativeLayout> 
