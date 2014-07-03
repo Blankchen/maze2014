@@ -2,6 +2,9 @@ package com.example.maze2014;
 
 
 
+
+
+
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -11,19 +14,20 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Choreographer.FrameCallback;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
 
-public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMenuListener{
+public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMenuListener, FragmentCost.OnCostListener, FragmentFavor.OnFavorListener{
 
 	//這個是整個 Navigation Drawer 的物件，也就是最外層被我們設定 id 為 @+id/drw_layout 的 DrawerLayout
 	private DrawerLayout mDrawerLayout;
@@ -35,7 +39,7 @@ public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMe
 	private int mCurrentMenuItemPosition = -1;
 	// 選單項目
 	public static final String[] MENU_ITEMS = new String[]{
-	    "菜單", "地圖", "桌號 ", "我的最愛", "統計"
+		"地圖導引", "菜單選擇",  "決定數量 ", "我的最愛", "訂單狀態"
 	};
 	//menu
 	String[] listData = {"1號 大麥克", "2號 雙層牛肉吉士堡", "3號 四盎司牛肉堡", "4號 雙層四盎司牛肉堡", "5號 麥香魚", "6號 麥香雞", "7號 六塊麥克雞塊", "8號 勁辣雞腿堡", "9號 二塊麥脆雞", "10號 板烤雞腿堡"};
@@ -45,20 +49,31 @@ public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMe
 	public static android.support.v4.app.FragmentManager fragmentManager;
 	public static Double latitude = 25.082963, longitude = 121.549091;
 	private static String tittle = "McDonald麥當勞", context = "104台灣北安路626號";	
+	//cost
+	boolean[] itemChecked = new boolean[listData.length]; //勾選項目
+	String[] listChecked; //勾選清單
+	int[] listCostCh; //勾選價錢
+	int TrueCount = 0; //勾選總數
+	int[] DataCount; //各選擇數量
+	//favor
+	String FavorName; //我的最愛名稱
+	//order
+	String phone;
+	String search;
+	String where;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+		super.onCreate(savedInstanceState);		
+		
 		initActionBar();
 		initDrawer();
-		setDrawerMenu();
-		
+		setDrawerMenu();		
 		//預設目錄
 		selectMenuItem(0);
 				
 		//map- initialising the object of the FragmentManager. Here I'm passing getSupportFragmentManager(). You can pass getFragmentManager() if you are coding for Android 3.0 or above.
 	    fragmentManager = getSupportFragmentManager();
-	
 		
 	}
 	
@@ -154,11 +169,8 @@ public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMe
 	    	// ActionBar 各圖示的 click 事件處理
 	    	switch (item.getItemId()) 
 	        {
-	            case R.id.action_search:
-	                openSearch();
-	                return true;
 	            case R.id.action_refresh:
-	                openEdit();
+	                openRefresh();
 	                return true;
 	            default:
 	                return super.onOptionsItemSelected(item);
@@ -171,40 +183,72 @@ public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMe
 
 	//selectMenuItem(int position)	當清單物件被點擊後要執行的動作
 	private void selectMenuItem(int position) {
+		if(mCurrentMenuItemPosition == position && position ==0){
+			Toast.makeText(this, "請選擇其他功能", Toast.LENGTH_LONG).show();
+			return;
+		}
+		
 	    mCurrentMenuItemPosition = position;	 
+	    getActionBar().setTitle(
+                MENU_ITEMS[mCurrentMenuItemPosition]);
 	    // 將選單的子物件設定為被選擇的狀態
 	    mLsvDrawerMenu.setItemChecked(position, true);	 
 	    // 關掉 Drawer
 	    mDrawerLayout.closeDrawer(mLlvDrawerContent);
-	    
+	   	 	    
 		//[Android]使用 Navigation Drawer 製作側選單
 		// http://blog.tonycube.com/2014/02/android-navigation-drawer-2.html		
 	    Fragment fragment = null;
 	    Bundle b=new Bundle();
 	    
 	    switch (position) {	    
-	    case 0:
-	        fragment = new FragmentMenu();	        
-	        b.putStringArray("Data", listData);
-	        b.putIntArray("Cost", listCost);
-	        fragment.setArguments(b);
-	        break; 
-	    case 1:
-	        fragment = new FragmentMap();	        
+	    case 0:	
+	    	fragment = new FragmentMap();	        
 	        b.putDouble("x", latitude);
 	        b.putDouble("y", longitude);
 	        b.putString("tittle", tittle);
 	        b.putString("context", context);
 	        fragment.setArguments(b);
 	        break;  
+	    case 1:	  
+	        fragment = new FragmentMenu();	        
+	        b.putStringArray("Data", listData);
+	        b.putIntArray("Cost", listCost);
+	        b.putBooleanArray("itemChecked", itemChecked);
+	        fragment.setArguments(b);
+	        break; 
 	    case 2:
-	        fragment = new FragmentCost();       
-	       
+	        fragment = new FragmentCost(); 	      
+	        b.putStringArray("DataChecked", listChecked);
+	        b.putIntArray("Costed", listCostCh);
+	        b.putIntArray("DataCount", DataCount);
+	        fragment.setArguments(b);
 	        break;  
+	    case 3:
+	        fragment = new FragmentFavor();
+	        b.putString("tittle", tittle);
+	        b.putStringArray("DataChecked", listChecked);
+	        b.putIntArray("Costed", listCostCh);
+	        b.putIntArray("DataCount", DataCount);
+	        b.putString("FavorName", FavorName);
+	        fragment.setArguments(b);
+	        break;  
+	    case 4:
+	    	fragment = new FragmentOrder();
+	    	b.putString("tittle", tittle);
+	    	b.putString("phone", phone);
+	    	b.putString("search", search);
+	    	b.putString("where", where);
+	    	b.putStringArray("datalist", listChecked);
+	        b.putIntArray("datacost", listCostCh);
+	        b.putIntArray("datacount", DataCount);
+	        fragment.setArguments(b);
+	    	break;  
 	    default:
 	        //還沒製作的選項，fragment 是 null，直接返回
 	        return;
 	    }
+	    
 
 	    FragmentManager fragmentManager = getFragmentManager(); 
 	    fragmentManager.beginTransaction().  //开始Fragment的事务Transaction
@@ -225,31 +269,84 @@ public class MainActivity extends ActionBarActivity implements FragmentMenu.OnMe
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);		
-		
 		//MenuItem searchItem = menu.findItem(R.id.action_search);	    
 		//SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);	
 		
 	    return super.onCreateOptionsMenu(menu);
 	}
 	
-	public void openSearch()
+	public void openRefresh()
 	{
-	    Toast.makeText(this, "按了 尋找 鈕", Toast.LENGTH_LONG).show();
+		switch (mCurrentMenuItemPosition) {
+		case 1:
+			for(int i=0;i<itemChecked.length;i++) itemChecked[i]=false;
+			TrueCount = 0;
+			selectMenuItem(1);
+			break;
+		case 2:
+			for(int i=0;i<DataCount.length;i++) DataCount[i]=1;
+			selectMenuItem(2);
+			break;
+		case 4:			
+			search = ((EditText)findViewById(R.id.etphone)).getText().toString();
+			Log.d("FFFFFFFFFFF",search);
+			selectMenuItem(4);
+			break;			
+		default:		        
+			return;
+		
+		}
 	}
-	  
-	public void openEdit()
-	{
-	    Toast.makeText(this, "按了 更新  鈕", Toast.LENGTH_LONG).show();
-	}
+	// 啟用 Support Library 的 ActionBar ====================================================
 	
-	//fragment callback
+	//fragmentMenu callback
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		// TODO Auto-generated method stub
-		//索取Fragment資料
+		//索取FragmentMenu資料
+		itemChecked[position] = !itemChecked[position];	
+		
+		if(itemChecked[position]) TrueCount++;
+		else TrueCount--;
+		
+		listChecked = new String[TrueCount];
+		listCostCh = new int [TrueCount];
+		DataCount = new int[TrueCount];
+		
+		for(int i = 0, j = 0; i < itemChecked.length; i++) 
+			if(itemChecked[i]){
+				listChecked[j] = listData[i];	
+				listCostCh[j] = listCost[i];
+				DataCount[j++] = 1;
+			}
+		
 	}
 	
-	// 啟用 Support Library 的 ActionBar ====================================================
+	//fragmentCost callback-getDataCount sentOrder
+	@Override
+	public void getDataCount(int[] DataCount, String FavorName) {
+		// TODO Auto-generated method stub	
+		this.DataCount = DataCount;
+		this.FavorName = FavorName;
+		
+		selectMenuItem(3);
+		this.FavorName = null;
 
+	}
+
+	@Override
+	public void sentOrder(String phone, String where, String[] datalist,
+			int[] datacost, int[] datacount) {
+		// TODO Auto-generated method stub
+		this.phone = phone;
+		this.search = phone;
+		this.where = where;
+		this.listChecked = datalist;
+		this.listCostCh = datacost;
+		this.DataCount = datacount;		
+		selectMenuItem(4);
+		this.phone = null;
+		
+	}
 	
 }

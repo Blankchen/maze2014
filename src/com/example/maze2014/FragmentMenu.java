@@ -11,50 +11,59 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-
 public class FragmentMenu extends ListFragment{
 	
 	OnMenuListener MenuCallback;
 	static String[] listData;
 	static int[] listCost;
-	static String[] listItem;
+	static String[] listItem;	
 	static boolean[] itemChecked;
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub		
 		super.onCreate(savedInstanceState);	
 		listData = getArguments().getStringArray("Data");
-		listCost = getArguments().getIntArray("Cost");
-		itemChecked = new boolean[listData.length];
-		listItem = new String[listData.length];
-				
+		listCost = getArguments().getIntArray("Cost");		
+		itemChecked = getArguments().getBooleanArray("itemChecked");
+		
+		listItem = new String[listData.length];				
 		for(int i=0; i<listData.length; i++) listItem[i] = listData[i]+" $"+listCost[i];
 		
 		ArrayAdapter<String> adapter 
         = new ArrayAdapter<String>(getActivity(),
              android.R.layout.simple_list_item_multiple_choice,listItem);		
-		setListAdapter(adapter);
 		
+		setListAdapter(adapter);					
 	}
 	
 	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onActivityCreated(savedInstanceState);
+	
+		for(int i = 0; i < itemChecked.length; i++)
+			if(itemChecked[i]) getListView().setItemChecked(i, true);
+			else getListView().setItemChecked(i, false);
+	}
+
+
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return initView(inflater, container);           
     }   
     
     private View initView(LayoutInflater inflater, ViewGroup container) {
-        View view = inflater.inflate(R.layout.fragment_menu, container, false);   
-             
+        View view = inflater.inflate(R.layout.fragment_menu, container, false);  
         return view;
     }
     
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         // TODO Auto-generated method stub
-        super.onListItemClick(l, v, position, id);
-     
+        super.onListItemClick(l, v, position, id);               
+        
         String menu = "您點的餐點有：";        
      
         for(int i=0;i<l.getCheckedItemPositions().size();i++)
@@ -78,14 +87,13 @@ public class FragmentMenu extends ListFragment{
     
     @Override
     public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        
+        super.onAttach(activity);        
         // 這裡確保容器 activity 有實作這個界面、否則丟出例外
         try {
         	MenuCallback = (OnMenuListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnHeadlineSelectedListener");
+                    + " must implement onListItemClick");
         }
     }
 

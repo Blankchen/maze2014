@@ -3,10 +3,10 @@ package com.example.maze2014;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -14,33 +14,46 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class FragmentMap extends Fragment{
-	private static View view;
-	/**
-	 * Note that this may be null if the Google Play services APK is not
-	 * available.
-	 */
-
+	public static View view;
 	private static GoogleMap mMap;
 	private static Double latitude, longitude;
 	private static String tittle, context;	
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		// TODO Auto-generated method stub
+		super.onCreateOptionsMenu(menu, inflater);
+		if(menu != null){
+			menu.findItem(R.id.action_refresh).setVisible(false);
+		}
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	        Bundle savedInstanceState) {
 	    if (container == null) {
 	        return null;
-	    }
-	    view = (RelativeLayout) inflater.inflate(R.layout.fragment_map, container, false);
-	    // Passing harcoded values for latitude & longitude. Please change as per your need. This is just used to drop a Marker on the Map
-	            latitude = getArguments().getDouble("x");
-	            longitude = getArguments().getDouble("y");
-	            tittle = getArguments().getString("tittle");
-	            context = getArguments().getString("context");
+	    }  
+	 
+	   // Passing harcoded values for latitude & longitude. Please change as per your need. This is just used to drop a Marker on the Map
+        latitude = getArguments().getDouble("x");
+        longitude = getArguments().getDouble("y");
+        tittle = getArguments().getString("tittle");
+        context = getArguments().getString("context");
+        
+        view = inflater.inflate(R.layout.fragment_map, container, false);
 
-	            setUpMapIfNeeded(); // For setting up the MapFragment
-	    
-	    mMap.setMyLocationEnabled(true);	    
-	    return view;
+        setUpMapIfNeeded(); // For setting up the MapFragment
+        
+	    return view;     
+       
 	}
 
 	/***** Sets up the map if it is possible to do so *****/
@@ -56,13 +69,6 @@ public class FragmentMap extends Fragment{
 	    }
 	}
 
-	/**
-	 * This is where we can add markers or lines, add listeners or move the
-	 * camera.
-	 * <p>
-	 * This should only be called once and when we are sure that {@link #mMap}
-	 * is not null.
-	 */
 	private static void setUpMap() {
 	    // For showing a move to my loction button
 	    mMap.setMyLocationEnabled(true);
@@ -89,9 +95,6 @@ public class FragmentMap extends Fragment{
 	    }
 	}
 
-	/**** The mapfragment's id must be removed from the FragmentManager
-	 **** or else if the same it is passed on the next time then 
-	 **** app will crash ****/
 	@Override
 	public void onDestroyView() {
 	    super.onDestroyView();
@@ -101,4 +104,5 @@ public class FragmentMap extends Fragment{
 	        mMap = null;
 	    }
 	}
+
 }
